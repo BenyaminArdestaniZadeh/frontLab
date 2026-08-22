@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { iranSans } from "@/src/styles/fonts";
-import { StyledComponentsRegistry, ThemeProvider } from "@/src/providers";
-import "@/src/styles/globals.css";
+import { iranSans } from "@/styles/fonts";
+import { StyledComponentsRegistry, ThemeProvider } from "@/providers";
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: "FrontLab",

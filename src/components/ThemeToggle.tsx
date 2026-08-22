@@ -1,5 +1,6 @@
 "use client";
 import { useTheme } from "next-themes";
+import { Button } from "./primitives";
 
 /**
  * props and types
@@ -29,23 +30,18 @@ export const ThemeToggle = () => {
    * _______________________________________________________________________________
    */
   return (
-    // <div className="p-8 bg-blue-500 text-black">
-    //   <button
-    //     className="bg-primary text-primary-foreground p-2 rounded-md"
-    //     onClick={() => setTheme("light")}
-    //   >
-    //     Light
-    //   </button>
-    //   <button onClick={() => setTheme("dark")}>Dark</button>
-    // </div>
-
-    // <div className="flex gap-2 bg-red-500 p-8 text-white">
-    //   <div className="size-10 bg-blue-500" />
-    //   <div className="size-10 bg-green-500" />
-    // </div>
-    <div className="w-full flex gap-2 bg-red-500 p-8 text-white">
-      <div className="size-10 bg-blue-500" />
-      <div className="size-10 bg-green-500" />
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        padding: "16px 24px",
+        gap: "24px",
+      }}
+    >
+      <Button color={"danger"} onClick={() => setTheme("light")}>
+        light
+      </Button>
+      <Button onClick={() => setTheme("dark")}>dark</Button>
     </div>
   );
 };
