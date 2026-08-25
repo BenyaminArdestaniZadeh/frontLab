@@ -17,12 +17,14 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/styled-components": "^5.1.36",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "postcss": "^8.5.26",
     "typescript": "^5"
   }
 }
