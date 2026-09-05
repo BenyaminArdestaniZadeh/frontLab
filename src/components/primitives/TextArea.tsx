@@ -7,15 +7,17 @@ import {
   useId,
   useState,
 } from "react";
-
-import styled, { css } from "styled-components";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/cn";
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 export type TextAreaVariant = "outlined" | "filled" | "underline";
 
-export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  variant?: TextAreaVariant;
+export interface TextAreaProps
+  extends
+    TextareaHTMLAttributes<HTMLTextAreaElement>,
+    VariantProps<typeof textAreaVariants> {
   error?: boolean;
   errorText?: string;
   label?: string;
@@ -23,224 +25,142 @@ export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
   endAdornment?: ReactNode;
 }
 /* -------------------------------------------------------------------------- */
-/* Variant Styles                                                             */
+/* TextArea Variants                                                          */
 /* -------------------------------------------------------------------------- */
-const variantStyles: Record<TextAreaVariant, ReturnType<typeof css>> = {
-  outlined: css`
-    border: 1px solid var(--border);
-    background: var(--background);
-    border-radius: 6px;
-    &:hover:not(:focus-within) {
-      border-color: var(--muted-foreground);
-    }
-    &:focus-within {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px var(--primary);
-    }
-  `,
-  filled: css`
-    border: 1px solid transparent;
-    background: var(--secondary);
-    border-radius: 6px;
-    &:hover:not(:focus-within) {
-      background: color-mix(in srgb, var(--secondary) 92%, var(--foreground));
-    }
-    &:focus-within {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px var(--primary);
-    }
-  `,
-  underline: css`
-    border: none;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    background: transparent;
-    &:hover:not(:focus-within) {
-      border-bottom-color: var(--muted-foreground);
-    }
-    &:focus-within {
-      border-bottom-color: var(--primary);
-      box-shadow: 0 1px 0 var(--primary);
-    }
-  `,
-};
-/* -------------------------------------------------------------------------- */
-/* Wrapper                                                                    */
-/* -------------------------------------------------------------------------- */
-const FieldWrapper = styled.div`
-  width: 100%;
-  min-width: 0;
-`;
-/* -------------------------------------------------------------------------- */
-/* Container                                                                  */
-/* -------------------------------------------------------------------------- */
-interface ContainerProps {
-  $variant: TextAreaVariant;
-  $error: boolean;
-  $disabled: boolean;
-}
-
-const Container = styled.div<ContainerProps>`
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  padding-block-start: 8px;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-  ${({ $variant }) => variantStyles[$variant]}
-  /* ------------------------------------------------------------------------ */
-  /* Error                                                                    */
-  /* ------------------------------------------------------------------------ */
-  ${({ $error }) =>
-    $error &&
-    css`
-      border-color: var(--destructive) !important;
-      &:focus-within {
-        border-color: var(--destructive) !important;
-        box-shadow: 0 0 0 1px var(--destructive);
-      }
-    `}
-  /* ------------------------------------------------------------------------ */
-  /* Disabled                                                                 */
-  /* ------------------------------------------------------------------------ */
-  ${({ $disabled }) =>
-    $disabled &&
-    css`
-      opacity: 0.6;
-      cursor: not-allowed;
-      background: var(--muted);
-      &:hover {
-        border-color: var(--border);
-      }
-    `}
-`;
-/* -------------------------------------------------------------------------- */
-/* Label                                                                      */
-/* -------------------------------------------------------------------------- */
-interface FieldLabelProps {
-  $error: boolean;
-}
-
-const FieldLabel = styled.label<FieldLabelProps>`
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  inset-inline-start: 12px;
-  transform: translateY(-50%);
-  padding-inline: 6px;
-  pointer-events: none;
-  background: var(--background);
-  font-family: var(--sans-font);
-  font-size: 12px;
-  line-height: 1;
-  color: ${({ $error }) =>
-    $error ? "var(--destructive)" : "var(--muted-foreground)"};
-  transition: color 0.2s ease;
-  ${Container}:focus-within & {
-    color: ${({ $error }) =>
-      $error ? "var(--destructive)" : "var(--primary)"};
-  }
-`;
+const textAreaVariants = cva(
+  [
+    "relative",
+    "flex",
+    "items-stretch",
+    "w-full",
+    "min-w-0",
+    "box-border",
+    "pt-2",
+    "transition-[background-color,border-color,box-shadow]",
+    "duration-200",
+    "ease-in-out",
+  ],
+  {
+    variants: {
+      variant: {
+        outlined: [
+          "border",
+          "border-border",
+          "bg-background",
+          "rounded-md",
+          "hover:not-focus-within:border-muted-foreground",
+          "focus-within:border-primary",
+          "focus-within:shadow-[0_0_0_1px_var(--primary)]",
+        ],
+        filled: [
+          "border",
+          "border-transparent",
+          "bg-secondary",
+          "rounded-md",
+          "hover:not-focus-within:bg-[color-mix(in_srgb,var(--secondary)_92%,var(--foreground))]",
+          "focus-within:border-primary",
+          "focus-within:shadow-[0_0_0_1px_var(--primary)]",
+        ],
+        underline: [
+          "border-0",
+          "border-b",
+          "border-border",
+          "rounded-none",
+          "bg-transparent",
+          "hover:not-focus-within:border-b-muted-foreground",
+          "focus-within:border-b-primary",
+          "focus-within:shadow-[0_1px_0_var(--primary)]",
+        ],
+      },
+    },
+    defaultVariants: {
+      variant: "outlined",
+    },
+  },
+);
 /* -------------------------------------------------------------------------- */
 /* TextArea Row                                                               */
 /* -------------------------------------------------------------------------- */
-const TextAreaRow = styled.div`
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-  min-width: 0;
-`;
+const textAreaRowVariants = cva(["flex", "items-stretch", "w-full", "min-w-0"]);
 /* -------------------------------------------------------------------------- */
 /* TextArea                                                                    */
 /* -------------------------------------------------------------------------- */
-
-interface StyledTextAreaProps {
-  $hasFloatingLabel: boolean;
-}
-
-const StyledTextArea = styled.textarea<StyledTextAreaProps>`
-  flex: 1;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  border: none;
-  outline: none;
-  background: transparent;
-  padding-block: 10px;
-  padding-inline: 12px;
-  font-family: var(--sans-font);
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--foreground);
-  caret-color: var(--primary);
-  text-align: start;
-  resize: vertical;
-  min-height: 100px;
-  &::placeholder {
-    color: ${({ $hasFloatingLabel }) =>
-      $hasFloatingLabel ? "transparent" : "var(--muted-foreground)"};
-    opacity: 1;
-    text-align: start;
-  }
-  &:disabled {
-    cursor: not-allowed;
-  }
-  @media (max-width: 1023px) {
-    font-size: 16px;
-  }
-  /* ------------------------------------------------------------------------ */
-  /* Autofill                                                                 */
-  /* ------------------------------------------------------------------------ */
-  &:-webkit-autofill,
-  &:-webkit-autofill:hover,
-  &:-webkit-autofill:focus {
-    -webkit-text-fill-color: var(--foreground);
-    -webkit-box-shadow: 0 0 0 1000px var(--background) inset;
-    transition:
-      background-color 9999s ease-out,
-      color 9999s ease-out;
-  }
-`;
+const textAreaInputVariants = cva([
+  "flex-1",
+  "w-full",
+  "min-w-0",
+  "box-border",
+  "border-none",
+  "outline-none",
+  "bg-transparent",
+  "py-[10px]",
+  "px-3",
+  "font-sans",
+  "text-sm",
+  "leading-[1.5]",
+  "text-foreground",
+  "caret-primary",
+  "text-start",
+  "resize-y",
+  "min-h-[100px]",
+  "placeholder:text-muted-foreground",
+  "placeholder:opacity-100",
+  "disabled:cursor-not-allowed",
+  /* Autofill */
+  "[&:-webkit-autofill]:[-webkit-text-fill-color:var(--foreground)]",
+  "[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_1000px_var(--background)_inset]",
+  "[&:-webkit-autofill]:[transition:background-color_9999s_ease-out,color_9999s_ease-out]",
+  "[&:-webkit-autofill:hover]:[-webkit-text-fill-color:var(--foreground)]",
+  "[&:-webkit-autofill:hover]:[-webkit-box-shadow:0_0_0_1000px_var(--background)_inset]",
+  "[&:-webkit-autofill:hover]:[transition:background-color_9999s_ease-out,color_9999s_ease-out]",
+  "[&:-webkit-autofill:focus]:[-webkit-text-fill-color:var(--foreground)]",
+  "[&:-webkit-autofill:focus]:[-webkit-box-shadow:0_0_0_1000px_var(--background)_inset]",
+  "[&:-webkit-autofill:focus]:[transition:background-color_9999s_ease-out,color_9999s_ease-out]",
+  /* Responsive */
+  "max-[1023px]:text-base",
+]);
+/* -------------------------------------------------------------------------- */
+/* Label                                                                      */
+/* -------------------------------------------------------------------------- */
+const textAreaLabelVariants = cva([
+  "absolute",
+  "z-[1]",
+  "top-0",
+  "start-3",
+  "-translate-y-1/2",
+  "px-1.5",
+  "pointer-events-none",
+  "bg-background",
+  "font-sans",
+  "text-xs",
+  "leading-none",
+  "text-muted-foreground",
+  "transition-colors",
+  "duration-200",
+]);
 /* -------------------------------------------------------------------------- */
 /* Adornment                                                                  */
 /* -------------------------------------------------------------------------- */
-interface AdornmentProps {
-  $position: "start" | "end";
-}
-
-const Adornment = styled.span<AdornmentProps>`
-  display: inline-flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-shrink: 0;
-  padding-block-start: 10px;
-  color: var(--muted-foreground);
-  ${({ $position }) =>
-    $position === "start" ?
-      css`
-        margin-inline-start: 12px;
-      `
-    : css`
-        margin-inline-end: 12px;
-      `}
-`;
+const textAreaAdornmentVariants = cva([
+  "inline-flex",
+  "items-start",
+  "justify-center",
+  "shrink-0",
+  "pt-[10px]",
+  "text-muted-foreground",
+]);
 /* -------------------------------------------------------------------------- */
 /* Error Message                                                              */
 /* -------------------------------------------------------------------------- */
-const ErrorMessage = styled.span`
-  display: block;
-  margin-top: 4px;
-  padding-inline: 4px;
-  font-family: var(--sans-font);
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--destructive);
-`;
+const textAreaErrorMessageVariants = cva([
+  "block",
+  "mt-1",
+  "px-1",
+  "font-sans",
+  "text-xs",
+  "leading-[1.4]",
+  "text-destructive",
+]);
 /* -------------------------------------------------------------------------- */
 /* Component                                                                  */
 /* -------------------------------------------------------------------------- */
@@ -259,6 +179,8 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       defaultValue,
       onFocus,
       onBlur,
+      onChange,
+      className,
       ...props
     },
     ref,
@@ -269,43 +191,77 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const generatedId = useId();
     const textareaId = id ?? generatedId;
     const errorId = errorText ? `${textareaId}-error` : undefined;
+    const isControlled = value !== undefined;
     const [isFocused, setIsFocused] = useState(false);
-
-    const controlledHasValue = value !== undefined && String(value).length > 0;
-
-    const defaultHasValue =
-      value === undefined &&
-      defaultValue !== undefined &&
-      String(defaultValue).length > 0;
-
-    const hasValue = controlledHasValue || defaultHasValue;
-
+    const [uncontrolledValue, setUncontrolledValue] = useState(() =>
+      defaultValue !== undefined ? String(defaultValue) : "",
+    );
+    const currentValue = isControlled ? String(value ?? "") : uncontrolledValue;
+    const hasValue = currentValue.length > 0;
     const shouldShowLabel = Boolean(label) && (isFocused || hasValue);
     /* ---------------------------------------------------------------------- */
     /* render                                                                  */
     /* ---------------------------------------------------------------------- */
     return (
-      <FieldWrapper>
-        <Container $variant={variant} $error={error} $disabled={disabled}>
-          {shouldShowLabel && (
-            <FieldLabel htmlFor={textareaId} $error={error}>
-              {label}
-            </FieldLabel>
+      <div className="w-full min-w-0">
+        <div
+          className={cn(
+            textAreaVariants({
+              variant,
+            }),
+            error && [
+              "border-destructive",
+              "focus-within:border-destructive",
+              "focus-within:shadow-[0_0_0_1px_var(--destructive)]",
+            ],
+            disabled && [
+              "opacity-60",
+              "cursor-not-allowed",
+              "bg-muted",
+              "hover:border-border",
+            ],
+            className,
           )}
-          <TextAreaRow>
+        >
+          {shouldShowLabel && (
+            <label
+              htmlFor={textareaId}
+              className={cn(
+                textAreaLabelVariants(),
+                error ? "text-destructive" : "text-muted-foreground",
+                isFocused && (error ? "text-destructive" : "text-primary"),
+              )}
+            >
+              {label}
+            </label>
+          )}
+          <div className={textAreaRowVariants()}>
             {startAdornment && (
-              <Adornment $position="start">{startAdornment}</Adornment>
+              <span className={cn(textAreaAdornmentVariants(), "ms-3")}>
+                {startAdornment}
+              </span>
             )}
-            <StyledTextArea
+            <textarea
               {...props}
               ref={ref}
               id={textareaId}
               value={value}
               defaultValue={defaultValue}
               disabled={disabled}
-              $hasFloatingLabel={shouldShowLabel}
+              className={cn(
+                textAreaInputVariants(),
+                label && shouldShowLabel ?
+                  "placeholder:transparent"
+                : "placeholder:text-muted-foreground",
+              )}
               aria-invalid={error || undefined}
               aria-describedby={errorId}
+              onChange={(event) => {
+                if (!isControlled) {
+                  setUncontrolledValue(event.target.value);
+                }
+                onChange?.(event);
+              }}
               onFocus={(event) => {
                 setIsFocused(true);
                 onFocus?.(event);
@@ -316,12 +272,18 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
               }}
             />
             {endAdornment && (
-              <Adornment $position="end">{endAdornment}</Adornment>
+              <span className={cn(textAreaAdornmentVariants(), "me-3")}>
+                {endAdornment}
+              </span>
             )}
-          </TextAreaRow>
-        </Container>
-        {errorText && <ErrorMessage id={errorId}>{errorText}</ErrorMessage>}
-      </FieldWrapper>
+          </div>
+        </div>
+        {errorText && (
+          <span id={errorId} className={textAreaErrorMessageVariants()}>
+            {errorText}
+          </span>
+        )}
+      </div>
     );
   },
 );
