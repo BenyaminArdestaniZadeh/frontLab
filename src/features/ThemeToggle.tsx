@@ -1,6 +1,6 @@
 "use client";
+import { Button } from "@/shared/ui";
 import { useTheme } from "next-themes";
-import { Button } from "./primitives";
 
 /**
  * props and types

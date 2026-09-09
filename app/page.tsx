@@ -1,9 +1,12 @@
 "use client";
+import { ThemeToggle } from "@/features/ThemeToggle";
 import {
+  Accordion,
   Button,
   Drawer,
   Flex,
   Grid,
+  Modal,
   MultiCheckbox,
   Pagination,
   Select,
@@ -13,10 +16,8 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from "@/components/primitives";
-import Accordion from "@/components/primitives/Accordion";
-import Modal from "@/components/primitives/Modal";
-import { ThemeToggle } from "@/components/ThemeToggle";
+} from "@/shared/ui";
+
 import { useState } from "react";
 
 export default function HomePage() {
